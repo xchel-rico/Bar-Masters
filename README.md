@@ -1,4 +1,4 @@
-# BarMasters 🍻
+# BarMasters 🍻 - MVP 1
 
 BarMasters é uma aplicação que permite cadastrar, buscar, recomendar e avaliar bares. O projeto segue princípios de Clean Architecture, com backend em Flask e um frontend independente em HTML, CSS e JavaScript.
 
