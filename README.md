@@ -1,9 +1,6 @@
-# BarMasters API – Primeira versão (sem front-end)
+# BarMasters 🍻
 
-Esta é a primeira versão de teste da API do BarMasters, apenas com o backend em Python
-(sem HTML, CSS ou JavaScript).
-
----
+BarMasters é uma aplicação que permite cadastrar, buscar, recomendar e avaliar bares. O projeto segue princípios de Clean Architecture, com backend em Flask e um frontend independente em HTML, CSS e JavaScript.
 
 ## 🚀 Como rodar o backend (server)
 
