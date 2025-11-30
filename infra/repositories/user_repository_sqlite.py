@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime, timezone
 from domain.user import User
 from infra.repositories.user_repository import UserRepository
 
@@ -16,10 +15,6 @@ class UserRepositorySQLite(UserRepository):
             cursor = conn.cursor()
 
             if user.id is None:
-                # opcional: poner fecha si no viene
-                if user.created_at is None:
-                    user.created_at = datetime.now(timezone.utc).isoformat()
-
                 cursor.execute(
                     """
                     INSERT INTO users (name, email, password_hash, created_at)

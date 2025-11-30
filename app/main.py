@@ -43,6 +43,7 @@ def create_app():
         recommend_bar_uc,
         search_bars_uc,
         list_new_bars_uc,
+        rate_bar_uc
     )
     # rate_bar_uc lo usarás después en una ruta de avaliar
 

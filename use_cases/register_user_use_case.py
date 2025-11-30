@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from domain.user import User
 from infra.repositories.user_repository import UserRepository
 import hashlib
@@ -15,7 +15,7 @@ class RegisterUserUseCase:
             raise ValueError("E-mail já cadastrado")
 
         password_hash = self._hash_password(password)
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
 
         user = User(
             id=None,

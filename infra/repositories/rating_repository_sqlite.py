@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime, timezone
 from domain.rating import Rating
 from infra.repositories.rating_repository import RatingRepository
 
@@ -14,11 +13,6 @@ class RatingRepositorySQLite(RatingRepository):
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
-
-            if rating.created_at is None:
-                rating.created_at = datetime.now(timezone.utc).isoformat()
-
-
             if rating.id is None:
                 cursor.execute(
                     """
@@ -54,7 +48,7 @@ class RatingRepositorySQLite(RatingRepository):
         finally:
             conn.close()
 
-    def get_by_bar_id(self, bar_id: int) -> list[Rating]:
+    def list_by_bar_id(self, bar_id: int) -> list[Rating]:
         conn = self._get_connection()
         try:
             cursor = conn.cursor()

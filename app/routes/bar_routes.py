@@ -1,8 +1,9 @@
-from flask import Blueprint, request, render_template_string
+from flask import Blueprint, request, render_template_string, jsonify
 from use_cases.register_bar_use_case import RegisterBarUseCase
 from use_cases.recommend_bar_use_case import RecommendBarUseCase
 from use_cases.search_bars_use_case import SearchBarsUseCase
 from use_cases.list_new_bars_use_case import ListNewBarsUseCase
+from use_cases.rate_bar_use_case import RateBarUseCase
 
 bp = Blueprint("bars", __name__, url_prefix="/bars")
 
@@ -10,6 +11,7 @@ _register_bar_uc: RegisterBarUseCase | None = None
 _recommend_bar_uc: RecommendBarUseCase | None = None
 _search_bars_uc: SearchBarsUseCase | None = None
 _list_new_bars_uc: ListNewBarsUseCase | None = None
+_rate_bar_uc: RateBarUseCase | None = None
 
 
 def register_bar_routes(
@@ -18,12 +20,14 @@ def register_bar_routes(
     recommend_bar_uc: RecommendBarUseCase,
     search_bars_uc: SearchBarsUseCase,
     list_new_bars_uc: ListNewBarsUseCase,
+    rate_bar_uc: RateBarUseCase,
 ):
-    global _register_bar_uc, _recommend_bar_uc, _search_bars_uc, _list_new_bars_uc
+    global _register_bar_uc, _recommend_bar_uc, _search_bars_uc, _list_new_bars_uc, _rate_bar_uc
     _register_bar_uc = register_bar_uc
     _recommend_bar_uc = recommend_bar_uc
     _search_bars_uc = search_bars_uc
     _list_new_bars_uc = list_new_bars_uc
+    _rate_bar_uc = rate_bar_uc
 
     app.register_blueprint(bp)
 
@@ -169,3 +173,74 @@ def newest_bars():
         bars=bars,
         limit=limit,
     )
+
+@bp.route("/<int:bar_id>/rate", methods=["GET", "POST"])
+def rate_bar(bar_id: int):
+    global _rate_bar_uc
+
+    if request.method == "GET":
+        # Formulario HTML
+        return render_template_string(
+            """
+            <h2>Avaliar bar (ID {{ bar_id }})</h2>
+
+            <form method="post">
+              <label>User ID:</label><br>
+              <input type="number" name="user_id" required><br><br>
+
+              <label>Nota (1 a 5):</label><br>
+              <input type="number" name="score" min="1" max="5" required><br><br>
+
+              <label>Comentário (opcional):</label><br>
+              <textarea name="comment"></textarea><br><br>
+
+              <button type="submit">Enviar avaliação</button>
+            </form>
+
+            <p><a href="/">Voltar</a></p>
+            """,
+            bar_id=bar_id,
+        )
+
+    # POST → procesar evaluación
+    user_id = request.form.get("user_id")
+    score = request.form.get("score")
+    comment = request.form.get("comment", "")
+
+    # Validación
+    if not user_id or not score:
+        return "user_id e score são obrigatórios", 400
+
+    try:
+        rating = _rate_bar_uc.execute(
+            bar_id=bar_id,
+            user_id=int(user_id),
+            score=int(score),
+            comment=comment,
+        )
+
+        return render_template_string(
+            """
+            <h2>Avaliação registrada!</h2>
+
+            <p><strong>ID da avaliação:</strong> {{ rating.id }}</p>
+            <p><strong>Bar ID:</strong> {{ rating.bar_id }}</p>
+            <p><strong>User ID:</strong> {{ rating.user_id }}</p>
+            <p><strong>Nota:</strong> {{ rating.score }}</p>
+            <p><strong>Comentário:</strong> {{ rating.comment }}</p>
+            <p><strong>Criado em:</strong> {{ rating.created_at }}</p>
+
+            <p><a href="/">Voltar</a></p>
+            """,
+            rating=rating,
+        )
+    except ValueError as e:
+        return render_template_string(
+            """
+            <h2>Erro na avaliação</h2>
+            <p>{{ error }}</p>
+            <a href="/bars/{{ bar_id }}/rate">Tentar novamente</a>
+            """,
+            error=str(e),
+            bar_id=bar_id,
+        ), 400

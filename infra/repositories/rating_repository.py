@@ -9,5 +9,5 @@ class RatingRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_bar_id(self, bar_id: int) -> list[Rating]:
+    def list_by_bar_id(self, bar_id: int) -> list[Rating]:
         pass

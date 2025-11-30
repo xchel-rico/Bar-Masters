@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from domain.bar import Bar
 from infra.repositories.bar_repository import BarRepository
 from infra.repositories.user_repository import UserRepository
@@ -14,7 +14,7 @@ class RegisterBarUseCase:
         if not owner:
             raise ValueError("Dono (user) não encontrado")
 
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         bar = Bar(
             id=None,
             name=name,

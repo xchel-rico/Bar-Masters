@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from domain.rating import Rating
 from infra.repositories.bar_repository import BarRepository
 from infra.repositories.user_repository import UserRepository
@@ -28,7 +28,7 @@ class RateBarUseCase:
         if score < 1 or score > 5:
             raise ValueError("Score deve ser entre 1 e 5")
 
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         rating = Rating(
             id=None,
             bar_id=bar_id,
