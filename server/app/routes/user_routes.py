@@ -1,7 +1,7 @@
-from flask import Blueprint, request, render_template_string
+from flask import Blueprint, request, jsonify
 from use_cases.register_user_use_case import RegisterUserUseCase
 
-bp = Blueprint("users", __name__, url_prefix="/users")
+bp = Blueprint("users_api", __name__, url_prefix="/api/users")
 
 _register_user_uc: RegisterUserUseCase | None = None
 
@@ -9,49 +9,34 @@ _register_user_uc: RegisterUserUseCase | None = None
 def register_user_routes(app, register_user_uc: RegisterUserUseCase):
     global _register_user_uc
     _register_user_uc = register_user_uc
+
     app.register_blueprint(bp)
 
 
-@bp.route("/register", methods=["GET", "POST"])
-def register_user():
+@bp.route("", methods=["POST"])
+def api_register_user():
     global _register_user_uc
 
-    if request.method == "GET":
-        # Formulário simples em HTML
-        html = """
-        <h2>Registrar usuário</h2>
-        <form method="post">
-          Nome: <input type="text" name="name"><br>
-          E-mail: <input type="email" name="email"><br>
-          Senha: <input type="password" name="password"><br>
-          <button type="submit">Registrar</button>
-        </form>
-        """
-        return render_template_string(html)
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
 
-    # POST
-    name = request.form.get("name", "").strip()
-    email = request.form.get("email", "").strip()
-    password = request.form.get("password", "")
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not name or not email or not password:
+        return jsonify({"error": "name, email and password are required"}), 400
 
     try:
         user = _register_user_uc.execute(name=name, email=email, password=password)
-        return render_template_string(
-            """
-            <h2>Usuário registrado com sucesso!</h2>
-            <p>ID: {{ user.id }}</p>
-            <p>Nome: {{ user.name }}</p>
-            <p>E-mail: {{ user.email }}</p>
-            <a href="/">Voltar</a>
-            """,
-            user=user,
-        )
+
+        return jsonify({
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "created_at": user.created_at,
+        }), 201
+
     except ValueError as e:
-        return render_template_string(
-            """
-            <h2>Erro ao registrar usuário</h2>
-            <p>{{ error }}</p>
-            <a href="/users/register">Tentar novamente</a>
-            """,
-            error=str(e),
-        ), 400
+        return jsonify({"error": str(e)}), 400

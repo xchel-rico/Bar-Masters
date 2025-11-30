@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from infra.db.database import init_db, get_connection
 
 from infra.repositories.user_repository_sqlite import UserRepositorySQLite
@@ -19,10 +20,12 @@ from app.routes.bar_routes import register_bar_routes
 def create_app():
     app = Flask(__name__)
 
-    # Inicializa o banco (cria tabelas se não existirem)
+    CORS(app)
+
+    # Inicializa BD
     init_db()
 
-    # Repositórios concretos
+    # Repositórios
     user_repo = UserRepositorySQLite(get_connection)
     bar_repo = BarRepositorySQLite(get_connection)
     rating_repo = RatingRepositorySQLite(get_connection)
@@ -35,7 +38,7 @@ def create_app():
     list_new_bars_uc = ListNewBarsUseCase(bar_repo)
     rate_bar_uc = RateBarUseCase(bar_repo, user_repo, rating_repo)
 
-    # Registra rotas, injetando use cases
+    # Registrar rotas da API
     register_user_routes(app, register_user_uc)
     register_bar_routes(
         app,
@@ -45,20 +48,6 @@ def create_app():
         list_new_bars_uc,
         rate_bar_uc
     )
-    # rate_bar_uc lo usarás después en una ruta de avaliar
-
-    @app.route("/")
-    def index():
-        return """
-        <h1>Bar Masters</h1>
-        <ul>
-          <li><a href="/users/register">Registrar usuário</a></li>
-          <li><a href="/bars/register">Cadastrar bar</a></li>
-          <li><a href="/bars/random">Recomendar bar aleatório</a></li>
-          <li><a href="/bars/search?q=bar">Pesquisar bares (?q=)</a></li>
-          <li><a href="/bars/newest">Novos bares</a></li>
-        </ul>
-        """
 
     return app
 

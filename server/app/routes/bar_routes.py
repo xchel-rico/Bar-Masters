@@ -1,11 +1,11 @@
-from flask import Blueprint, request, render_template_string, jsonify
+from flask import Blueprint, request, jsonify
 from use_cases.register_bar_use_case import RegisterBarUseCase
 from use_cases.recommend_bar_use_case import RecommendBarUseCase
 from use_cases.search_bars_use_case import SearchBarsUseCase
 from use_cases.list_new_bars_use_case import ListNewBarsUseCase
 from use_cases.rate_bar_use_case import RateBarUseCase
 
-bp = Blueprint("bars", __name__, url_prefix="/bars")
+bp = Blueprint("bars_api", __name__, url_prefix="/api/bars")
 
 _register_bar_uc: RegisterBarUseCase | None = None
 _recommend_bar_uc: RecommendBarUseCase | None = None
@@ -23,6 +23,7 @@ def register_bar_routes(
     rate_bar_uc: RateBarUseCase,
 ):
     global _register_bar_uc, _recommend_bar_uc, _search_bars_uc, _list_new_bars_uc, _rate_bar_uc
+
     _register_bar_uc = register_bar_uc
     _recommend_bar_uc = recommend_bar_uc
     _search_bars_uc = search_bars_uc
@@ -32,119 +33,101 @@ def register_bar_routes(
     app.register_blueprint(bp)
 
 
-@bp.route("/register", methods=["GET", "POST"])
-def register_bar():
+# --------------------------
+# POST /api/bars
+# --------------------------
+@bp.route("", methods=["POST"])
+def api_register_bar():
     global _register_bar_uc
+    data = request.get_json()
 
-    if request.method == "GET":
-        html = """
-        <h2>Cadastrar bar</h2>
-        <form method="post">
-          Nome do bar: <input type="text" name="name"><br>
-          Endereço: <input type="text" name="address"><br>
-          Descrição: <input type="text" name="description"><br>
-          ID do dono (user_id): <input type="number" name="owner_id"><br>
-          <button type="submit">Salvar</button>
-        </form>
-        <p>Obs: crie primeiro o usuário dono e use o ID dele aqui.</p>
-        """
-        return render_template_string(html)
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
 
-    name = request.form.get("name", "").strip()
-    address = request.form.get("address", "").strip()
-    description = request.form.get("description", "").strip()
-    owner_id = request.form.get("owner_id")
+    name = data.get("name")
+    address = data.get("address")
+    description = data.get("description")
+    owner_id = data.get("owner_id")
 
-    try:
-        owner_id_int = int(owner_id)
-    except (TypeError, ValueError):
-        return "owner_id inválido", 400
+    if not name or not address or not owner_id:
+        return jsonify({"error": "name, address and owner_id are required"}), 400
 
     try:
         bar = _register_bar_uc.execute(
             name=name,
             address=address,
             description=description,
-            owner_id=owner_id_int,
+            owner_id=int(owner_id),
         )
-        return render_template_string(
-            """
-            <h2>Bar cadastrado com sucesso!</h2>
-            <p>ID: {{ bar.id }}</p>
-            <p>Nome: {{ bar.name }}</p>
-            <p>Endereço: {{ bar.address }}</p>
-            <p>Descrição: {{ bar.description }}</p>
-            <p>Owner ID: {{ bar.owner_id }}</p>
-            <a href="/">Voltar</a>
-            """,
-            bar=bar,
-        )
+
+        return jsonify({
+            "id": bar.id,
+            "name": bar.name,
+            "address": bar.address,
+            "description": bar.description,
+            "owner_id": bar.owner_id,
+            "created_at": bar.created_at,
+        }), 201
+
     except ValueError as e:
-        return render_template_string(
-            """
-            <h2>Erro ao cadastrar bar</h2>
-            <p>{{ error }}</p>
-            <a href="/bars/register">Tentar novamente</a>
-            """,
-            error=str(e),
-        ), 400
+        return jsonify({"error": str(e)}), 400
 
 
+# --------------------------
+# GET /api/bars/random
+# --------------------------
 @bp.route("/random", methods=["GET"])
-def random_bar():
+def api_random_bar():
     global _recommend_bar_uc
+
     bar = _recommend_bar_uc.execute()
 
     if not bar:
-        return "<h2>Nenhum bar cadastrado ainda.</h2><a href='/'>Voltar</a>"
+        return jsonify([]), 200
 
-    return render_template_string(
-        """
-        <h2>Bar recomendado</h2>
-        <p><strong>{{ bar.name }}</strong></p>
-        <p>{{ bar.address }}</p>
-        <p>{{ bar.description }}</p>
-        <a href="/">Voltar</a>
-        """,
-        bar=bar,
-    )
+    return jsonify({
+        "id": bar.id,
+        "name": bar.name,
+        "address": bar.address,
+        "description": bar.description,
+        "owner_id": bar.owner_id,
+        "created_at": bar.created_at,
+    })
 
 
+# --------------------------
+# GET /api/bars/search?q=...
+# --------------------------
 @bp.route("/search", methods=["GET"])
-def search_bars():
+def api_search_bars():
     global _search_bars_uc
+
     q = request.args.get("q", "").strip()
-    bars = _search_bars_uc.execute(q) if q else []
+    if not q:
+        return jsonify([])
 
-    return render_template_string(
-        """
-        <h2>Pesquisar bares</h2>
-        <form method="get">
-          Buscar: <input type="text" name="q" value="{{ q }}">
-          <button type="submit">Buscar</button>
-        </form>
-        {% if q %}
-          <h3>Resultados para "{{ q }}":</h3>
-          {% if bars %}
-            <ul>
-            {% for bar in bars %}
-              <li><strong>{{ bar.name }}</strong> - {{ bar.address }}</li>
-            {% endfor %}
-            </ul>
-          {% else %}
-            <p>Nenhum bar encontrado.</p>
-          {% endif %}
-        {% endif %}
-        <a href="/">Voltar</a>
-        """,
-        q=q,
-        bars=bars,
-    )
+    bars = _search_bars_uc.execute(q)
+
+    return jsonify([
+        {
+            "id": b.id,
+            "name": b.name,
+            "address": b.address,
+            "description": b.description,
+            "owner_id": b.owner_id,
+            "created_at": b.created_at,
+        }
+        for b in bars
+    ])
 
 
+# --------------------------
+# GET /api/bars/newest
+# --------------------------
 @bp.route("/newest", methods=["GET"])
-def newest_bars():
+def api_newest_bars():
     global _list_new_bars_uc
+
     limit_param = request.args.get("limit")
     try:
         limit = int(limit_param) if limit_param else 5
@@ -153,63 +136,36 @@ def newest_bars():
 
     bars = _list_new_bars_uc.execute(limit=limit)
 
-    return render_template_string(
-        """
-        <h2>Novos bares (limite {{ limit }})</h2>
-        {% if bars %}
-          <ul>
-          {% for bar in bars %}
-            <li>
-              <strong>{{ bar.name }}</strong> - {{ bar.address }}
-              (owner_id: {{ bar.owner_id }})
-            </li>
-          {% endfor %}
-          </ul>
-        {% else %}
-          <p>Nenhum bar cadastrado ainda.</p>
-        {% endif %}
-        <a href="/">Voltar</a>
-        """,
-        bars=bars,
-        limit=limit,
-    )
+    return jsonify([
+        {
+            "id": b.id,
+            "name": b.name,
+            "address": b.address,
+            "description": b.description,
+            "owner_id": b.owner_id,
+            "created_at": b.created_at,
+        }
+        for b in bars
+    ])
 
-@bp.route("/<int:bar_id>/rate", methods=["GET", "POST"])
-def rate_bar(bar_id: int):
+
+# --------------------------
+# POST /api/bars/<bar_id>/rate
+# --------------------------
+@bp.route("/<int:bar_id>/rate", methods=["POST"])
+def api_rate_bar(bar_id: int):
     global _rate_bar_uc
 
-    if request.method == "GET":
-        # Formulario HTML
-        return render_template_string(
-            """
-            <h2>Avaliar bar (ID {{ bar_id }})</h2>
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
 
-            <form method="post">
-              <label>User ID:</label><br>
-              <input type="number" name="user_id" required><br><br>
+    user_id = data.get("user_id")
+    score = data.get("score")
+    comment = data.get("comment", "")
 
-              <label>Nota (1 a 5):</label><br>
-              <input type="number" name="score" min="1" max="5" required><br><br>
-
-              <label>Comentário (opcional):</label><br>
-              <textarea name="comment"></textarea><br><br>
-
-              <button type="submit">Enviar avaliação</button>
-            </form>
-
-            <p><a href="/">Voltar</a></p>
-            """,
-            bar_id=bar_id,
-        )
-
-    # POST → procesar evaluación
-    user_id = request.form.get("user_id")
-    score = request.form.get("score")
-    comment = request.form.get("comment", "")
-
-    # Validación
     if not user_id or not score:
-        return "user_id e score são obrigatórios", 400
+        return jsonify({"error": "user_id and score required"}), 400
 
     try:
         rating = _rate_bar_uc.execute(
@@ -219,28 +175,14 @@ def rate_bar(bar_id: int):
             comment=comment,
         )
 
-        return render_template_string(
-            """
-            <h2>Avaliação registrada!</h2>
+        return jsonify({
+            "id": rating.id,
+            "bar_id": rating.bar_id,
+            "user_id": rating.user_id,
+            "score": rating.score,
+            "comment": rating.comment,
+            "created_at": rating.created_at,
+        }), 201
 
-            <p><strong>ID da avaliação:</strong> {{ rating.id }}</p>
-            <p><strong>Bar ID:</strong> {{ rating.bar_id }}</p>
-            <p><strong>User ID:</strong> {{ rating.user_id }}</p>
-            <p><strong>Nota:</strong> {{ rating.score }}</p>
-            <p><strong>Comentário:</strong> {{ rating.comment }}</p>
-            <p><strong>Criado em:</strong> {{ rating.created_at }}</p>
-
-            <p><a href="/">Voltar</a></p>
-            """,
-            rating=rating,
-        )
     except ValueError as e:
-        return render_template_string(
-            """
-            <h2>Erro na avaliação</h2>
-            <p>{{ error }}</p>
-            <a href="/bars/{{ bar_id }}/rate">Tentar novamente</a>
-            """,
-            error=str(e),
-            bar_id=bar_id,
-        ), 400
+        return jsonify({"error": str(e)}), 400

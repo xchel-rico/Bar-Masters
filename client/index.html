@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bar Masters</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header>
+  <h1>Bar Masters 🍻</h1>
+  <p>Encontre seu bar favorito no Rio de Janeiro</p>
+</header>
+
+<main>
+  <!-- REGISTRAR USUÁRIO -->
+  <section class="card">
+    <h2>Registrar usuário</h2>
+    <form id="user-form">
+      <input id="user-name" placeholder="Nome" required />
+      <input id="user-email" placeholder="Email" type="email" required />
+      <input id="user-password" placeholder="Senha" type="password" required />
+      <button type="submit">Registrar</button>
+    </form>
+    <p id="user-feedback" class="feedback"></p>
+  </section>
+
+  <!-- CADASTRAR BAR -->
+  <section class="card">
+    <h2>Cadastrar bar</h2>
+    <form id="bar-form">
+      <input id="bar-name" placeholder="Nome do bar" required />
+      <input id="bar-address" placeholder="Endereço" required />
+      <input id="bar-desc" placeholder="Descrição" />
+      <input id="bar-owner" placeholder="ID do dono (user_id)" type="number" required />
+      <button type="submit">Cadastrar</button>
+    </form>
+    <p id="bar-feedback" class="feedback"></p>
+  </section>
+
+  <!-- BUSCAR BAR -->
+  <section class="card">
+    <h2>Buscar bares</h2>
+    <input id="search-text" placeholder="Texto da busca..." />
+    <button id="search-btn">Buscar</button>
+
+    <button id="random-btn">Bar aleatório</button>
+    <button id="newest-btn">Novos bares</button>
+
+    <div id="bars-list"></div>
+  </section>
+
+  <!-- AVALIAR BAR -->
+  <section class="card">
+    <h2>Avaliar bar</h2>
+    <form id="rate-form">
+      <input id="rate-bar-id" placeholder="ID do bar" type="number" required />
+      <input id="rate-user-id" placeholder="Seu user_id" type="number" required />
+      <input id="rate-score" placeholder="Nota (1 a 5)" type="number" min="1" max="5" required />
+      <input id="rate-comment" placeholder="Comentário" />
+      <button type="submit">Enviar avaliação</button>
+    </form>
+    <p id="rate-feedback" class="feedback"></p>
+  </section>
+
+</main>
+
+<footer>
+  <p>Bar Masters – Projeto de Engenharia de Software</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
