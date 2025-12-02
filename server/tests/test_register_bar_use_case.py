@@ -4,6 +4,7 @@ from domain.bar import Bar
 from domain.user import User
 from use_cases.register_bar_use_case import RegisterBarUseCase
 
+
 class TestRegisterBarUseCase:
 
     def test_register_bar_success(self):
@@ -12,10 +13,12 @@ class TestRegisterBarUseCase:
         mock_user_repo = Mock()
 
         # Simula que o dono do bar existe
-        mock_user_repo.get_by_id.return_value = User(1, "Dono", "dono@test.com", "hash", "date")
-        
+        mock_user_repo.get_by_id.return_value = User(
+            1, "Dono", "dono@test.com", "hash", "date")
+
         # Mock do save retornando o bar com ID
-        mock_bar_repo.save.side_effect = lambda b: Bar(10, b.name, b.address, b.description, b.owner_id, b.created_at)
+        mock_bar_repo.save.side_effect = lambda b: Bar(
+            10, b.name, b.address, b.description, b.owner_id, b.created_at)
 
         use_case = RegisterBarUseCase(mock_bar_repo, mock_user_repo)
 
@@ -41,5 +44,5 @@ class TestRegisterBarUseCase:
         # Act & Assert
         with pytest.raises(ValueError, match="Dono \(user\) não encontrado"):
             use_case.execute("Bar", "Rua", "Desc", 999)
-        
+
         mock_bar_repo.save.assert_not_called()

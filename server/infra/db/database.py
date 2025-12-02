@@ -4,12 +4,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 DB_PATH = ROOT / "db" / "bar_masters.db"
 
+
 def get_connection():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    
+
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
 
 def init_db():
     conn = get_connection()

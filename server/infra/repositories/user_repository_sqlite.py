@@ -2,11 +2,12 @@ import sqlite3
 from domain.user import User
 from infra.repositories.user_repository import UserRepository
 
+
 class UserRepositorySQLite(UserRepository):
     def __init__(self, connection_factory):
         self.connection_factory = connection_factory
 
-    def _get_connection(self)-> sqlite3.Connection:
+    def _get_connection(self) -> sqlite3.Connection:
         return self.connection_factory()
 
     def save(self, user: User) -> User:

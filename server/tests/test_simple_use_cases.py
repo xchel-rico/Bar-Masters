@@ -4,13 +4,14 @@ from use_cases.search_bars_use_case import SearchBarsUseCase
 from use_cases.recommend_bar_use_case import RecommendBarUseCase
 from use_cases.list_new_bars_use_case import ListNewBarsUseCase
 
+
 class TestSimpleReadUseCases:
 
     def test_search_bars(self):
         mock_repo = Mock()
         expected_bars = [Bar(1, "Bar A", "End", "Desc", 1, "date")]
         mock_repo.search.return_value = expected_bars
-        
+
         use_case = SearchBarsUseCase(mock_repo)
         result = use_case.execute("query")
 
