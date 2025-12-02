@@ -186,3 +186,28 @@ def api_rate_bar(bar_id: int):
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+
+
+# --------------------------
+# GET /api/bars/<id> (Detalhes do bar)
+# --------------------------
+@bp.route("/<int:bar_id>", methods=["GET"])
+def api_get_bar(bar_id):
+    from infra.repositories.bar_repository_sqlite import BarRepositorySQLite
+    from infra.db.database import get_connection
+    
+    # Instanciamos o repo aqui rápido para não mudar a injeção de dependência global
+    repo = BarRepositorySQLite(get_connection)
+    bar = repo.get_by_id(bar_id)
+
+    if not bar:
+        return jsonify({"error": "Bar não encontrado"}), 404
+
+    return jsonify({
+        "id": bar.id,
+        "name": bar.name,
+        "address": bar.address,
+        "description": bar.description,
+        "owner_id": bar.owner_id,
+        "created_at": bar.created_at,
+    })

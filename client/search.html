@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><title>Buscar - Bar Masters</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="bars.html">Todos os Bares</a>
+    <a href="search.html" class="active">Busca Avançada</a>
+    <a href="register-bar.html">Cadastrar Bar</a>
+    <a href="login.html" id="nav-auth">Entrar</a>
+  </nav>
+
+  <main class="container">
+    <section class="card">
+      <h2>🔍 Encontrar Bares</h2>
+      <form id="search-form" class="search-box">
+        <input id="search-text" placeholder="Digite o nome..." required />
+        <button type="submit">Buscar</button>
+      </form>
+      
+      <div class="actions">
+        <button id="random-btn" class="btn-outline">🎲 Aleatório</button>
+        <button id="newest-btn" class="btn-outline">🔥 Novos</button>
+      </div>
+      
+      <div id="bars-list" style="margin-top: 2rem;"></div>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

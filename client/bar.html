@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><title>Detalhes - Bar Masters</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="bars.html">Todos os Bares</a>
+    <a href="search.html">Busca Avançada</a>
+    <a href="register-bar.html">Cadastrar Bar</a>
+    <a href="login.html" id="nav-auth">Entrar</a>
+  </nav>
+
+  <main class="container">
+    <section class="card" id="bar-details-card">
+      <h2 id="detail-name">Carregando...</h2>
+      <p id="detail-desc" style="color: #a8a8b3;"></p>
+      <div style="margin-top: 1rem;">
+        📍 <span id="detail-address"></span><br>
+        👤 Dono ID: <span id="detail-owner"></span>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top: 2rem;" id="rate-section">
+      <h3>⭐ Avaliar este Bar</h3>
+      <form id="rate-form">
+        <input id="rate-bar-id" type="hidden" />
+        <input id="rate-user-id" type="hidden" /> <div class="input-group">
+            <input id="rate-score" placeholder=" " type="number" min="1" max="5" required />
+            <label>Nota (1 a 5)</label>
+        </div>
+        <div class="input-group">
+            <input id="rate-comment" placeholder=" " />
+            <label>Comentário (opcional)</label>
+        </div>
+        <button type="submit" class="btn-secondary">Enviar Avaliação</button>
+      </form>
+      <p id="rate-feedback" class="feedback"></p>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><title>Cadastrar Bar - Bar Masters</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="bars.html">Todos os Bares</a>
+    <a href="search.html">Busca Avançada</a>
+    <a href="register-bar.html" class="active">Cadastrar Bar</a>
+    <a href="login.html" id="nav-auth">Entrar</a>
+  </nav>
+
+  <main class="container">
+    <section class="card" style="max-width: 600px; margin: 0 auto;">
+      <h2>🍺 Novo Bar</h2>
+      <form id="bar-form">
+        <div class="input-group">
+            <input id="bar-name" placeholder=" " required />
+            <label>Nome do Bar</label>
+        </div>
+        <div class="input-group">
+            <input id="bar-address" placeholder=" " required />
+            <label>Endereço</label>
+        </div>
+        <div class="input-group">
+            <input id="bar-desc" placeholder=" " />
+            <label>Descrição</label>
+        </div>
+        <div class="input-group">
+            <input id="bar-owner" placeholder=" " type="number" required />
+            <label>ID do Dono</label>
+        </div>
+        <button type="submit" class="btn-primary">Salvar Bar</button>
+      </form>
+      <p id="bar-feedback" class="feedback"></p>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

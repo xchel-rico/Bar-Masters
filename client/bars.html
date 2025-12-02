@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><title>Todos os Bares - Bar Masters</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="bars.html" class="active">Todos os Bares</a>
+    <a href="search.html">Busca Avançada</a>
+    <a href="register-bar.html">Cadastrar Bar</a>
+    <a href="login.html" id="nav-auth">Entrar</a>
+  </nav>
+
+  <main class="container">
+    <h2 style="margin-bottom: 1.5rem; border-bottom: 2px solid var(--primary); display: inline-block;">🍻 Lista Completa de Bares</h2>
+    
+    <div id="bars-list">
+      <p style="color: #666;">Carregando bares...</p>
+    </div>
+  </main>
+  
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><title>Criar Conta - Bar Masters</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="bars.html">Todos os Bares</a>
+    <a href="search.html">Busca Avançada</a>
+    <a href="register-bar.html">Cadastrar Bar</a>
+    <a href="login.html" id="nav-auth">Entrar</a>
+  </nav>
+
+  <main class="container">
+    <section class="card" style="max-width: 500px; margin: 4rem auto;">
+      <h2>👤 Novo Usuário</h2>
+      <form id="user-form">
+        <div class="input-group">
+          <input id="user-name" placeholder=" " required />
+          <label>Nome Completo</label>
+        </div>
+        <div class="input-group">
+          <input id="user-email" placeholder=" " type="email" required />
+          <label>E-mail</label>
+        </div>
+        <div class="input-group">
+          <input id="user-password" placeholder=" " type="password" required />
+          <label>Senha</label>
+        </div>
+        <button type="submit" class="btn-primary">Criar Conta</button>
+      </form>
+      <p id="user-feedback" class="feedback"></p>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
