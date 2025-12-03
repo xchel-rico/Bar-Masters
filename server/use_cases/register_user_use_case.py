@@ -5,11 +5,21 @@ import hashlib
 
 
 class RegisterUserUseCase:
+    """
+    Caso de uso responsável por registrar um novo usuário no sistema.
+    """
+
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
     def execute(self, name: str, email: str, password: str) -> User:
-        # comprobar se j´a existe um usuário com o mesmo e-mail
+        """
+        Executa a lógica de registro:
+        1. Verifica se o e-mail já existe.
+        2. Faz o hash da senha (SHA-256).
+        3. Cria a entidade User e salva no repositório.
+        """
+        # Verifica se já existe um usuário com o mesmo e-mail
         existing = self.user_repository.get_by_email(email)
         if existing:
             raise ValueError("E-mail já cadastrado")
@@ -27,4 +37,5 @@ class RegisterUserUseCase:
         return self.user_repository.save(user)
 
     def _hash_password(self, password: str) -> str:
+        """Gera um hash SHA-256 simples da senha."""
         return hashlib.sha256(password.encode("utf-8")).hexdigest()

@@ -1,4 +1,8 @@
 class Bar:
+    """
+    Entidade que representa um Bar (estabelecimento).
+    """
+
     def __init__(self, id, name, address, description, owner_id, created_at):
         self.id = id
         self.name = name

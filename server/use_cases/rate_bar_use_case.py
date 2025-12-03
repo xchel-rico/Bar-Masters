@@ -6,6 +6,10 @@ from infra.repositories.rating_repository import RatingRepository
 
 
 class RateBarUseCase:
+    """
+    Caso de uso para avaliar um bar (dar nota e comentário).
+    """
+
     def __init__(
         self,
         bar_repository: BarRepository,
@@ -17,6 +21,13 @@ class RateBarUseCase:
         self.rating_repository = rating_repository
 
     def execute(self, bar_id: int, user_id: int, score: int, comment: str) -> Rating:
+        """
+        Registra uma avaliação.
+        Validações:
+        - O Bar deve existir.
+        - O Usuário deve existir.
+        - A nota (score) deve ser entre 1 e 5.
+        """
         bar = self.bar_repository.get_by_id(bar_id)
         if not bar:
             raise ValueError("Bar não encontrado")
