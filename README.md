@@ -1,41 +1,29 @@
 # BarMasters 🍻 - MVP 1
 
-BarMasters é uma aplicação que permite cadastrar, buscar, recomendar e avaliar bares. O projeto segue princípios de Clean Architecture, com backend em Flask e um frontend independente em HTML, CSS e JavaScript.
+BarMasters é uma aplicação web que permite cadastrar, buscar, recomendar e avaliar bares. O projeto foi desenvolvido seguindo rigorosamente os princípios da **Clean Architecture** e **SOLID**, com backend em Flask e frontend independente.
 
 ---
 
-## ⚡ Início Rápido (Linux / Codespaces)
+## ⚡ Início Rápido (Automação via Scripts)
 
-Para facilitar a execução, incluímos scripts de automação na raiz do projeto.
+Para facilitar a execução no Linux ou Codespaces, criamos scripts que configuram tudo automaticamente.
 
 ### 1. Dê permissão de execução (Apenas na 1ª vez)
-Abra o terminal na pasta raiz e rode:
+No terminal, na raiz do projeto, execute:
 
 ```bash
-chmod +x run_server.sh run_client.sh
+chmod +x run_server.sh run_client.sh run_tests.sh show_db.sh
 
-2. Rodar o Backend
-
-Abra um terminal e execute:
-Bash
-
-./run_server.sh
-
-Isso vai criar o ambiente virtual, instalar dependências e iniciar o servidor na porta 5000.
-3. Rodar o Frontend
-
-Abra outro terminal e execute:
-Bash
-
-./run_client.sh
-
-Isso vai iniciar o site na porta 8000.
+2. Comandos de Execução
+Ação	Comando	O que faz?
+Rodar Servidor	./run_server.sh	Cria ambiente virtual, instala libs e sobe o backend (Porta 5000).
+Rodar Site	./run_client.sh	Inicia o servidor do frontend (Porta 8000).
+Rodar Testes	./run_tests.sh	Executa a bateria de testes unitários (Pytest).
+Ver Banco	./show_db.sh	Exibe usuários, bares e avaliações formatados no terminal.
 🛠️ Instalação Manual (Passo a Passo)
 
-Caso prefira rodar os comandos manualmente ou esteja no Windows, siga as etapas abaixo.
+Caso prefira rodar manualmente ou esteja no Windows.
 Backend (Servidor)
-
-    Pré-requisitos: Python 3.10+, pip e SQLite.
 
     Entre na pasta do servidor:
     Bash
@@ -58,90 +46,95 @@ Bash
 
 pip install -r requirements.txt
 
-Execute o programa:
+Inicie a API:
 Bash
 
     python -m app.main
 
-    O servidor rodará em: http://127.0.0.1:5000
+    O backend rodará em http://127.0.0.1:5000
 
 Frontend (Cliente)
 
-    Abra um novo terminal e vá até a pasta:
+    Abra um novo terminal e vá para a pasta:
     Bash
 
 cd client
 
-Inicie o servidor estático local:
+Suba o servidor local:
 Bash
 
     python3 -m http.server 8000
 
     Acesse no navegador: 👉 http://127.0.0.1:8000
 
-📡 API – Endpoints principais
-Autenticação
+📡 Endpoints da API
 
-    POST /api/users → Registrar usuário
+A comunicação entre Frontend e Backend é feita via JSON.
+👤 Usuários
 
-    POST /api/users/login → Fazer login
+    POST /api/users → Registrar novo usuário.
 
-Bares
+    POST /api/users/login → Autenticar usuário (Retorna ID e Nome).
 
-    POST /api/bars → Cadastrar bar
+🍺 Bares
 
-    GET /api/bars/<id> → Detalhes de um bar
+    POST /api/bars → Cadastrar novo bar (Exige owner_id).
 
-    GET /api/bars/random → Recomendar bar aleatório
+    GET /api/bars/<id> → Obter detalhes de um bar específico.
 
-    GET /api/bars/search?q= → Buscar bares
+    GET /api/bars/search?q=... → Buscar bares por nome ou endereço.
 
-    GET /api/bars/newest → Listar novos bares
+    GET /api/bars/newest → Listar os bares recém-cadastrados.
 
-    POST /api/bars/<id>/rate → Avaliar bar
+    GET /api/bars/random → Recomendação de bar aleatório.
 
-Todas as respostas são em JSON.
-🧱 Arquitetura (Clean Architecture)
+    POST /api/bars/<id>/rate → Avaliar um bar (Nota 1-5 e comentário).
+
+🧱 Arquitetura e Estrutura
+
+O projeto segue a Clean Architecture, isolando regras de negócio de frameworks e bancos de dados.
 Bash
 
 server/
-  app/         → Rotas e Configuração (Frameworks & Drivers)
-  domain/      → Entidades Puras (Enterprise Business Rules)
-  use_cases/   → Regras de Negócio da Aplicação
-  infra/       → Repositórios e Banco de Dados (Interface Adapters)
-client/
-  *.html       → Páginas (Login, Busca, Cadastro, etc.)
-  app.js       → Lógica do Frontend
-  styles.css   → Estilização
+  ├── domain/       # Entidades Puras (User, Bar, Rating) - Sem dependências externas
+  ├── use_cases/    # Regras de Negócio (Lógica da aplicação)
+  ├── infra/        # Detalhes técnicos (Banco de Dados, Repositórios SQLite)
+  ├── app/          # Framework Web (Rotas Flask, Configuração)
+  ├── tests/        # Testes Unitários isolados
+  └── db/           # Arquivo do banco SQLite (gerado automaticamente)
 
-📘 GUIA: Gerenciando o Banco de Dados (SQLite)
+client/             # Frontend desacoplado (HTML/CSS/JS)
 
-Comandos para visualizar os dados diretamente pelo terminal.
-1. Acessar o Banco
-Bash
+Diferenciais de Qualidade
+
+    SOLID: Princípios aplicados (Ex: Inversão de Dependência nos repositórios).
+
+    Testes: Cobertura de testes unitários para os casos de uso usando unittest.mock.
+
+    PEP-8: Código formatado segundo as convenções Python.
+
+    Automação: Scripts Shell para facilitar o setup e execução.
+
+🗄️ Guia Manual do Banco de Dados
+
+Se preferir acessar o banco manualmente sem o script ./show_db.sh:
+
+    Acesse a pasta e abra o banco:
+    Bash
 
 cd server/db
 sqlite3 bar_masters.db
 
-2. Configurar Visualização
-
-Ao entrar no sqlite>, digite:
+Configure a visualização:
 SQL
 
 .headers on
 .mode column
 
-3. Comandos Úteis
+Exemplos de consultas:
 SQL
 
--- Ver usuários
 SELECT * FROM users;
-
--- Ver bares
 SELECT * FROM bars;
-
--- Ver avaliações
-SELECT * FROM ratings;
-
--- Sair
-.quit
+SELECT * FROM ratings WHERE score > 3;
+.quit  -- Para sair
