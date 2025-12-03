@@ -12,7 +12,6 @@ from use_cases.recommend_bar_use_case import RecommendBarUseCase
 from use_cases.search_bars_use_case import SearchBarsUseCase
 from use_cases.list_new_bars_use_case import ListNewBarsUseCase
 from use_cases.rate_bar_use_case import RateBarUseCase
-# <--- [NOVO] Importante
 from use_cases.login_user_use_case import LoginUserUseCase
 
 from app.routes.user_routes import register_user_routes
@@ -34,7 +33,6 @@ def create_app():
 
     # Use cases
     register_user_uc = RegisterUserUseCase(user_repo)
-    # <--- [NOVO] Criamos o caso de uso de login
     login_user_uc = LoginUserUseCase(user_repo)
 
     register_bar_uc = RegisterBarUseCase(bar_repo, user_repo)
@@ -44,7 +42,6 @@ def create_app():
     rate_bar_uc = RateBarUseCase(bar_repo, user_repo, rating_repo)
 
     # Registrar rotas da API
-    # AQUI ESTAVA O ERRO: Agora passamos 'login_user_uc' também 👇
     register_user_routes(app, register_user_uc, login_user_uc)
 
     register_bar_routes(
