@@ -2,116 +2,146 @@
 
 BarMasters é uma aplicação que permite cadastrar, buscar, recomendar e avaliar bares. O projeto segue princípios de Clean Architecture, com backend em Flask e um frontend independente em HTML, CSS e JavaScript.
 
-## 🚀 Como rodar o backend (server)
+---
 
-### 1. Pré-requisitos
+## ⚡ Início Rápido (Linux / Codespaces)
 
-- Python 3.10+ instalado  
-- `pip` instalado  
-- SQLite (normalmente já vem instalado no sistema)
+Para facilitar a execução, incluímos scripts de automação na raiz do projeto.
 
-### 2. Clonar o repositório
-
-```bash
-git clone https://github.com/xchel-rico/Bar-Masters.git
-cd Bar-Masters/server
-```
-
-### 3. Criar e ativar o ambiente virtual
+### 1. Dê permissão de execução (Apenas na 1ª vez)
+Abra o terminal na pasta raiz e rode:
 
 ```bash
-python -m venv .venv
-# Linux/macOS
+chmod +x run_server.sh run_client.sh
+
+2. Rodar o Backend
+
+Abra um terminal e execute:
+Bash
+
+./run_server.sh
+
+Isso vai criar o ambiente virtual, instalar dependências e iniciar o servidor na porta 5000.
+3. Rodar o Frontend
+
+Abra outro terminal e execute:
+Bash
+
+./run_client.sh
+
+Isso vai iniciar o site na porta 8000.
+🛠️ Instalação Manual (Passo a Passo)
+
+Caso prefira rodar os comandos manualmente ou esteja no Windows, siga as etapas abaixo.
+Backend (Servidor)
+
+    Pré-requisitos: Python 3.10+, pip e SQLite.
+
+    Entre na pasta do servidor:
+    Bash
+
+cd server
+
+Crie e ative o ambiente virtual:
+Bash
+
+# Linux/Mac
+python3 -m venv .venv
 source .venv/bin/activate
-```
 
-### 4. Instalar dependências
+# Windows
+# python -m venv .venv
+# .venv\Scripts\activate
 
-```bash
+Instale as dependências:
+Bash
+
 pip install -r requirements.txt
-```
 
-### 5. Executar o programa
+Execute o programa:
+Bash
 
-```bash
-python -m src.app.main
-```
+    python -m app.main
 
-Depois, abra o navegador e acesse: 
-```bash
-http://127.0.0.1:5000
-```
-(Ajuste a porta se o seu projeto usar outra.)
+    O servidor rodará em: http://127.0.0.1:5000
 
-## 🖥️ Como rodar o frontend (client)
+Frontend (Cliente)
 
-### 1. Vá até a pasta:
+    Abra um novo terminal e vá até a pasta:
+    Bash
 
-```bash
-cd Bar-Masters/client
-```
+cd client
 
-### 2. Abra o arquivo:
+Inicie o servidor estático local:
+Bash
 
-```bash
-index.html
-```
+    python3 -m http.server 8000
 
-Dê um duplo clique ou abra no navegador.
+    Acesse no navegador: 👉 http://127.0.0.1:8000
 
-### Opção 2: usar um servidor estático local
+📡 API – Endpoints principais
+Autenticação
 
-```bash
-cd Bar-Masters/client
-python -m http.server 8000
-```
+    POST /api/users → Registrar usuário
 
-Abra:
+    POST /api/users/login → Fazer login
 
-```bash
-http://127.0.0.1:8000
-```
+Bares
 
-## 📡 API – Endpoints principais
-### Usuários
+    POST /api/bars → Cadastrar bar
 
-- ```POST /api/users``` → Registrar usuário
+    GET /api/bars/<id> → Detalhes de um bar
 
-### Bares
+    GET /api/bars/random → Recomendar bar aleatório
 
-- ```POST /api/bars``` → Cadastrar bar
+    GET /api/bars/search?q= → Buscar bares
 
-- ```GET /api/bars/random``` → Recomendar bar aleatório
+    GET /api/bars/newest → Listar novos bares
 
-- ```GET /api/bars/search?q=``` → Buscar bares
-
-- ```GET /api/bars/newest``` → Listar novos bares
-
-- ```POST /api/bars/<id>/rate``` → Avaliar bar
+    POST /api/bars/<id>/rate → Avaliar bar
 
 Todas as respostas são em JSON.
+🧱 Arquitetura (Clean Architecture)
+Bash
 
-## 🧱 Arquitetura (Clean Architecture)
-
-``` bash
 server/
-  app/         → rotas (controllers)
-  domain/      → entidades
-  use_cases/   → regras de negócio
-  infra/       → repositórios + db
+  app/         → Rotas e Configuração (Frameworks & Drivers)
+  domain/      → Entidades Puras (Enterprise Business Rules)
+  use_cases/   → Regras de Negócio da Aplicação
+  infra/       → Repositórios e Banco de Dados (Interface Adapters)
 client/
-  index.html
-  styles.css
-  app.js
-  config.js
-```
+  *.html       → Páginas (Login, Busca, Cadastro, etc.)
+  app.js       → Lógica do Frontend
+  styles.css   → Estilização
 
-## ✔️ Status Atual
+📘 GUIA: Gerenciando o Banco de Dados (SQLite)
 
-- Backend completo (Flask + SQLite)
+Comandos para visualizar os dados diretamente pelo terminal.
+1. Acessar o Banco
+Bash
 
-- Frontend básico implementado (HTML/CSS/JS puros)
+cd server/db
+sqlite3 bar_masters.db
 
-- Comunicação via fetch + JSON
+2. Configurar Visualização
 
-- Estrutura separada entre frontend e backend
+Ao entrar no sqlite>, digite:
+SQL
+
+.headers on
+.mode column
+
+3. Comandos Úteis
+SQL
+
+-- Ver usuários
+SELECT * FROM users;
+
+-- Ver bares
+SELECT * FROM bars;
+
+-- Ver avaliações
+SELECT * FROM ratings;
+
+-- Sair
+.quit
